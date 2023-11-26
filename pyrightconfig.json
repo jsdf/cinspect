@@ -1,0 +1,11 @@
+{
+    "include": [
+        "**/*.py"
+    ],
+    "exclude": [
+        "dump.py"
+    ],
+    "strict": [
+        "**/*.py"
+    ],
+}

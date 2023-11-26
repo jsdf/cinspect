@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "Makefile.*": "makefile",
+    "*.makefile": "makefile",
+    "stdio.h": "c",
+    "iostream": "cpp",
+    "random": "cpp",
+    "test_bare_struct.h": "c"
+  },
+  "python.languageServer": "Pylance"
+}
