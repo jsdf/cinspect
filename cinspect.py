@@ -5,9 +5,8 @@ import sys
 import pprint
 
 import c_parser
-import codegen
-
-import typeassert
+import generators_imgui
+import generators_printers
 
 pp = pprint.PrettyPrinter()
 
@@ -60,47 +59,10 @@ if __name__ == "__main__":
 
         all_files_resolve_structs.update(resolved_structs)
 
-    printers_code = codegen.generate_code_for_structs(
-        all_files_resolve_structs, codegen.generate_print_function
-    )
-    printers_headers = codegen.generate_code_for_structs(
-        all_files_resolve_structs, codegen.generate_print_function_header
-    )
-
-    imgui_code = codegen.generate_code_for_structs(
-        all_files_resolve_structs, codegen.generate_imgui_render_editor_code
-    )
-    imgui_headers = codegen.generate_code_for_structs(
-        all_files_resolve_structs, codegen.generate_imgui_render_editor_code_header
-    )
-
     if args.output:
-        for struct_name, code in printers_code.items():
-            deps = codegen.get_struct_dependencies(
-                all_files_resolve_structs[struct_name], all_files_resolve_structs
-            )
-            with open(f"{args.output}/print_{struct_name}.c", "w") as f:
-                for dep in deps:
-                    f.write(f'// depends on "print_{dep}.c"\n')
-                f.write(typeassert.as_string(code))
-            with open(f"{args.output}/print_{struct_name}.h", "w") as f:
-                for dep in deps:
-                    f.write(f'// depends on "print_{dep}.h"\n')
-                f.write(typeassert.as_string(printers_headers[struct_name]))
-        for struct_name, code in imgui_code.items():
-            deps = codegen.get_struct_dependencies(
-                all_files_resolve_structs[struct_name], all_files_resolve_structs
-            )
-            with open(f"{args.output}/imgui_{struct_name}.cpp", "w") as f:
-                for dep in deps:
-                    f.write(f'// depends on "imgui_{dep}.cpp"\n')
-                f.write(typeassert.as_string(code))
-            with open(f"{args.output}/imgui_{struct_name}.h", "w") as f:
-                for dep in deps:
-                    f.write(f'// depends on "imgui_{dep}.h"\n')
-                f.write(typeassert.as_string(imgui_headers[struct_name]))
-    else:
-        print("printers_code")
-        pp.pprint(printers_code)
-        print("imgui_code")
-        pp.pprint(imgui_code)
+        # generate imgui files
+        generators_imgui.generate_imgui_files(args.output, all_files_resolve_structs)
+        # generate printer files
+        generators_printers.generate_printers_files(
+            args.output, all_files_resolve_structs
+        )
