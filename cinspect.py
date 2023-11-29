@@ -15,10 +15,6 @@ if __name__ == "__main__":
     argparser.add_argument(
         "filename", nargs="*", help="name of file to parse. you can also pass a glob"
     )
-    argparser.add_argument(
-        "--coord", help="show coordinates in the dump", action="store_true"
-    )
-    argparser.add_argument("--cpp-args", help="args to forward to cpp")
 
     argparser.add_argument(
         "-o",
