@@ -45,10 +45,23 @@ class Index(ClangObject):
         options: int = 0,
     ) -> TranslationUnit: ...
 
-class Cursor(Structure): ...
+class Cursor(Structure):
+    @property
+    def type(self) -> Type: ...
+    @property
+    def kind(self) -> CursorKind: ...
+    @property
+    def spelling(self) -> str: ...
+    @property
+    def displayname(self) -> str: ...
+    @property
+    def mangled_name(self) -> str: ...
+    @property
+    def location(self) -> SourceLocation: ...
 
 class Type(Structure):
     def get_children(self) -> Iterator[Cursor]: ...
+    def get_pointee(self) -> Type: ...
 
 class BaseEnumeration(object): ...
 
@@ -293,3 +306,101 @@ class CursorKind(BaseEnumeration):
     STATIC_ASSERT = CursorKind(602)
     FRIEND_DECL = CursorKind(603)
     OVERLOAD_CANDIDATE = CursorKind(700)
+
+class TypeKind(BaseEnumeration):
+    INVALID = TypeKind(0)
+    UNEXPOSED = TypeKind(1)
+    VOID = TypeKind(2)
+    BOOL = TypeKind(3)
+    CHAR_U = TypeKind(4)
+    UCHAR = TypeKind(5)
+    CHAR16 = TypeKind(6)
+    CHAR32 = TypeKind(7)
+    USHORT = TypeKind(8)
+    UINT = TypeKind(9)
+    ULONG = TypeKind(10)
+    ULONGLONG = TypeKind(11)
+    UINT128 = TypeKind(12)
+    CHAR_S = TypeKind(13)
+    SCHAR = TypeKind(14)
+    WCHAR = TypeKind(15)
+    SHORT = TypeKind(16)
+    INT = TypeKind(17)
+    LONG = TypeKind(18)
+    LONGLONG = TypeKind(19)
+    INT128 = TypeKind(20)
+    FLOAT = TypeKind(21)
+    DOUBLE = TypeKind(22)
+    LONGDOUBLE = TypeKind(23)
+    NULLPTR = TypeKind(24)
+    OVERLOAD = TypeKind(25)
+    DEPENDENT = TypeKind(26)
+    OBJCID = TypeKind(27)
+    OBJCCLASS = TypeKind(28)
+    OBJCSEL = TypeKind(29)
+    FLOAT128 = TypeKind(30)
+    HALF = TypeKind(31)
+    IBM128 = TypeKind(40)
+    COMPLEX = TypeKind(100)
+    POINTER = TypeKind(101)
+    BLOCKPOINTER = TypeKind(102)
+    LVALUEREFERENCE = TypeKind(103)
+    RVALUEREFERENCE = TypeKind(104)
+    RECORD = TypeKind(105)
+    ENUM = TypeKind(106)
+    TYPEDEF = TypeKind(107)
+    OBJCINTERFACE = TypeKind(108)
+    OBJCOBJECTPOINTER = TypeKind(109)
+    FUNCTIONNOPROTO = TypeKind(110)
+    FUNCTIONPROTO = TypeKind(111)
+    CONSTANTARRAY = TypeKind(112)
+    VECTOR = TypeKind(113)
+    INCOMPLETEARRAY = TypeKind(114)
+    VARIABLEARRAY = TypeKind(115)
+    DEPENDENTSIZEDARRAY = TypeKind(116)
+    MEMBERPOINTER = TypeKind(117)
+    AUTO = TypeKind(118)
+    ELABORATED = TypeKind(119)
+    PIPE = TypeKind(120)
+    OCLIMAGE1DRO = TypeKind(121)
+    OCLIMAGE1DARRAYRO = TypeKind(122)
+    OCLIMAGE1DBUFFERRO = TypeKind(123)
+    OCLIMAGE2DRO = TypeKind(124)
+    OCLIMAGE2DARRAYRO = TypeKind(125)
+    OCLIMAGE2DDEPTHRO = TypeKind(126)
+    OCLIMAGE2DARRAYDEPTHRO = TypeKind(127)
+    OCLIMAGE2DMSAARO = TypeKind(128)
+    OCLIMAGE2DARRAYMSAARO = TypeKind(129)
+    OCLIMAGE2DMSAADEPTHRO = TypeKind(130)
+    OCLIMAGE2DARRAYMSAADEPTHRO = TypeKind(131)
+    OCLIMAGE3DRO = TypeKind(132)
+    OCLIMAGE1DWO = TypeKind(133)
+    OCLIMAGE1DARRAYWO = TypeKind(134)
+    OCLIMAGE1DBUFFERWO = TypeKind(135)
+    OCLIMAGE2DWO = TypeKind(136)
+    OCLIMAGE2DARRAYWO = TypeKind(137)
+    OCLIMAGE2DDEPTHWO = TypeKind(138)
+    OCLIMAGE2DARRAYDEPTHWO = TypeKind(139)
+    OCLIMAGE2DMSAAWO = TypeKind(140)
+    OCLIMAGE2DARRAYMSAAWO = TypeKind(141)
+    OCLIMAGE2DMSAADEPTHWO = TypeKind(142)
+    OCLIMAGE2DARRAYMSAADEPTHWO = TypeKind(143)
+    OCLIMAGE3DWO = TypeKind(144)
+    OCLIMAGE1DRW = TypeKind(145)
+    OCLIMAGE1DARRAYRW = TypeKind(146)
+    OCLIMAGE1DBUFFERRW = TypeKind(147)
+    OCLIMAGE2DRW = TypeKind(148)
+    OCLIMAGE2DARRAYRW = TypeKind(149)
+    OCLIMAGE2DDEPTHRW = TypeKind(150)
+    OCLIMAGE2DARRAYDEPTHRW = TypeKind(151)
+    OCLIMAGE2DMSAARW = TypeKind(152)
+    OCLIMAGE2DARRAYMSAARW = TypeKind(153)
+    OCLIMAGE2DMSAADEPTHRW = TypeKind(154)
+    OCLIMAGE2DARRAYMSAADEPTHRW = TypeKind(155)
+    OCLIMAGE3DRW = TypeKind(156)
+    OCLSAMPLER = TypeKind(157)
+    OCLEVENT = TypeKind(158)
+    OCLQUEUE = TypeKind(159)
+    OCLRESERVEID = TypeKind(160)
+    EXTVECTOR = TypeKind(176)
+    ATOMIC = TypeKind(177)

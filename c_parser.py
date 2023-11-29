@@ -1,7 +1,6 @@
 from collections import OrderedDict
 from typing import Dict, List, Set, Optional, Any, NamedTuple
 import clang.cindex
-import typeassert
 
 
 # name: name of the field
@@ -34,7 +33,7 @@ class StructInfo(NamedTuple):
     location: clang.cindex.SourceLocation
 
 
-debug_print_enabled = True
+debug_print_enabled = False
 
 
 def dbg(*args: Any, **kwargs: Any) -> None:
@@ -97,7 +96,7 @@ def dbg_print_ast_node(node: clang.cindex.Cursor, depth: int = 0):
 
     # Recursively print children nodes
     for child in node.get_children():
-        dbg_print_ast_node(typeassert.as_cursor(child), depth + 1)
+        dbg_print_ast_node(child, depth + 1)
 
 
 def get_pointer_info(cursor: clang.cindex.Cursor) -> tuple[int, clang.cindex.Type]:
@@ -109,10 +108,10 @@ def get_pointer_info(cursor: clang.cindex.Cursor) -> tuple[int, clang.cindex.Typ
         tuple: A tuple containing the number of pointer levels and the ultimate type
     """
     count = 0
-    cursor_type = typeassert.as_type(cursor.type)
-    while cursor_type.kind == clang.cindex.TypeKind.POINTER:  # type: ignore
+    cursor_type = cursor.type
+    while cursor_type.kind == clang.cindex.TypeKind.POINTER:
         count += 1
-        cursor_type = typeassert.as_type(cursor_type.get_pointee())
+        cursor_type = cursor_type.get_pointee()
 
     # The ultimate type pointed to (after resolving all pointers)
     ultimate_type = cursor_type
@@ -124,7 +123,7 @@ def visit_struct_decl(
     types: List[UnresolvedStructInfo],
 ) -> None:
     dbg("visit_struct_decl")
-    struct_name = typeassert.as_string(node.spelling or node.displayname)
+    struct_name = node.spelling or node.displayname
     dbg("struct_name:", struct_name)
     # pretty print ast node
 
@@ -132,7 +131,7 @@ def visit_struct_decl(
 
     fields: List[UnresolvedFieldInfo] = []
     attributes = [
-        typeassert.as_string(c.spelling or c.displayname)
+        c.spelling or c.displayname
         for c in node.get_children()
         if c.kind == clang.cindex.CursorKind.ANNOTATE_ATTR
     ]
@@ -140,15 +139,15 @@ def visit_struct_decl(
     options = pragmas_to_options(attributes)
 
     for c in node.get_children():
-        if c.kind == clang.cindex.CursorKind.FIELD_DECL:  # type: ignore
-            field_name: str = typeassert.as_string(c.spelling or c.displayname)
+        if c.kind == clang.cindex.CursorKind.FIELD_DECL:
+            field_name: str = c.spelling or c.displayname
             dbg("visiting field: ", field_name)
             dbg("field type spelling: ", c.type.spelling)
             dbg("ast node: ")
             dbg_print_ast_node(c)
 
             reference_depth, ultimate_type = get_pointer_info(c)
-            typename = typeassert.as_string(ultimate_type.spelling)
+            typename = ultimate_type.spelling
 
             dbg("typename: ", typename)
             dbg("reference_depth: ", reference_depth)
@@ -158,15 +157,11 @@ def visit_struct_decl(
                     field_name,
                     typename,
                     reference_depth,
-                    typeassert.as_location(c.location),
+                    c.location,
                 )
             )
 
-    types.append(
-        UnresolvedStructInfo(
-            struct_name, fields, options, typeassert.as_location(node.location)
-        )
-    )
+    types.append(UnresolvedStructInfo(struct_name, fields, options, node.location))
 
 
 def pragmas_to_options(pragmas: List[str]) -> Dict[str, Any]:
@@ -199,7 +194,7 @@ def find_struct_attributes(cursor: clang.cindex.Cursor) -> List[str]:
 
         # Accumulate tokens that are part of the attribute
         if in_attribute:
-            current_attribute += " " + typeassert.as_string(token.spelling)
+            current_attribute += " " + token.spelling
             # Detect the end of the attribute
             if token.spelling.endswith(")"):
                 attributes.append(current_attribute)
@@ -213,29 +208,26 @@ def extract_types(ast: clang.cindex.TranslationUnit) -> List[UnresolvedStructInf
     types: List[UnresolvedStructInfo] = []
     cur_pragmas: List[str] = []
 
-    for node_untyped in ast.cursor.get_children():
-        node = typeassert.as_cursor(node_untyped)
+    for node in ast.cursor.get_children():
         dbg("visiting node: ", node.kind)
         dbg_print_ast_node(node)
 
         # note: clang eliminates the #pragma directives from the AST
         # so this code is probably going away
-        if node.kind == clang.cindex.CursorKind.PREPROCESSING_DIRECTIVE:  # type: ignore
-            cur_pragmas.append(typeassert.as_string(node.spelling))
+        if node.kind == clang.cindex.CursorKind.PREPROCESSING_DIRECTIVE:
+            cur_pragmas.append(node.spelling)
             print("pragma: ", node.spelling)
             continue
 
-        if node.kind == clang.cindex.CursorKind.TYPEDEF_DECL:  # type: ignore
-            if node.type.kind == clang.cindex.TypeKind.RECORD:  # type: ignore
-                if node.type.get_children() is None:
-                    continue
+        if node.kind == clang.cindex.CursorKind.TYPEDEF_DECL:
+            if node.type.kind == clang.cindex.TypeKind.RECORD:
                 visit_struct_decl(
-                    typeassert.as_cursor(node.type),
+                    node.type,
                     types,
                 )
-        elif node.kind == clang.cindex.CursorKind.STRUCT_DECL:  # type: ignore
+        elif node.kind == clang.cindex.CursorKind.STRUCT_DECL:
             visit_struct_decl(
-                typeassert.as_cursor(node),
+                node,
                 types,
             )
         cur_pragmas = []

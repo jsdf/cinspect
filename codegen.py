@@ -4,7 +4,6 @@ from typing import Callable, Optional, OrderedDict, Set
 
 from c_parser import StructInfo
 
-
 printf_formatters = {
     "signed": "%d",
     "unsigned": "%u",
