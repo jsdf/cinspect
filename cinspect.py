@@ -1,11 +1,13 @@
 import argparse
 from collections import OrderedDict
-import glob
+
 import sys
 import pprint
 
 import c_parser
 import codegen
+
+import typeassert
 
 pp = pprint.PrettyPrinter()
 
@@ -83,11 +85,11 @@ if __name__ == "__main__":
             with open(f"{args.output}/print_{struct_name}.c", "w") as f:
                 for dep in deps:
                     f.write(f'// depends on "print_{dep}.c"\n')
-                f.write(code)
+                f.write(typeassert.as_string(code))
             with open(f"{args.output}/print_{struct_name}.h", "w") as f:
                 for dep in deps:
                     f.write(f'// depends on "print_{dep}.h"\n')
-                f.write(printers_headers[struct_name])
+                f.write(typeassert.as_string(printers_headers[struct_name]))
         for struct_name, code in imgui_code.items():
             deps = codegen.get_struct_dependencies(
                 all_files_resolve_structs[struct_name], all_files_resolve_structs
@@ -95,11 +97,11 @@ if __name__ == "__main__":
             with open(f"{args.output}/imgui_{struct_name}.cpp", "w") as f:
                 for dep in deps:
                     f.write(f'// depends on "imgui_{dep}.cpp"\n')
-                f.write(code)
+                f.write(typeassert.as_string(code))
             with open(f"{args.output}/imgui_{struct_name}.h", "w") as f:
                 for dep in deps:
                     f.write(f'// depends on "imgui_{dep}.h"\n')
-                f.write(imgui_headers[struct_name])
+                f.write(typeassert.as_string(imgui_headers[struct_name]))
     else:
         print("printers_code")
         pp.pprint(printers_code)

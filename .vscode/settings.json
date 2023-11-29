@@ -5,7 +5,9 @@
     "stdio.h": "c",
     "iostream": "cpp",
     "random": "cpp",
-    "test_bare_struct.h": "c"
+    "test_bare_struct.h": "c",
+    "test_pointer_field.h": "c",
+    "cinspect.h": "c"
   },
   "python.languageServer": "Pylance"
 }

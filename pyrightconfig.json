@@ -3,7 +3,9 @@
         "**/*.py"
     ],
     "exclude": [
-        "dump.py"
+        "dump.py",
+        "get-llvm-bindings.py",
+        "get-versioned-llvm-bindings.py"
     ],
     "strict": [
         "**/*.py"

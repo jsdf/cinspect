@@ -1,19 +1,17 @@
-#include "cinspect.h"
+#include "../cinspect.h"
 
-typedef struct Thing
+typedef struct Thang
 {
     int someInt;
-} Thing;
+} CINSPECT_STRUCT Thang;
 
-CINSPECT();
 typedef struct PhysBody
 {
     float mass;
 } PhysBody;
 
-CINSPECT();
 typedef struct GameObject
 {
-    Thing **physBody;
-    Thing child;
-} GameObject;
+    Thang **physBody;
+    Thang child;
+} CINSPECT_STRUCT GameObject;

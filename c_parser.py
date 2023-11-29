@@ -1,5 +1,3 @@
-# pyright: reportMissingTypeStubs=false, reportUnknownMemberType=false
-
 from collections import OrderedDict
 from typing import Dict, List, Set, Optional, Any, NamedTuple
 import clang.cindex
@@ -63,7 +61,7 @@ primitive_types: Set[str] = {
 
 def get_ast(filename: str) -> clang.cindex.TranslationUnit:
     index = clang.cindex.Index.create()
-    translation_unit = index.parse(
+    translation_unit: clang.cindex.TranslationUnit = index.parse(
         filename,
         args=[
             "-x",

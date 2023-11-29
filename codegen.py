@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from collections import OrderedDict
-from typing import Callable, List, Optional, OrderedDict
+from typing import Callable, Optional, OrderedDict, Set
 
 from c_parser import StructInfo
 
@@ -67,19 +67,19 @@ def generate_print_function_header(
     return c_code
 
 
-imgui_templates = {
-    "int": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "short": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "long": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "unsigned int": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "unsigned short": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "unsigned long": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "signed": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "unsigned": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
-    "float": lambda field_name: 'ImGui::InputFloat("{field_name}", &data.{field_name});\n',
-    "double": lambda field_name: 'ImGui::InputDouble("{field_name}", &data.{field_name});\n',
-    "cstring": lambda field_name: 'ImGui::InputText("{field_name}", data.{field_name}, sizeof(data.{field_name}));\n',
-}
+# imgui_templates = {
+#     "int": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "short": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "long": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "unsigned int": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "unsigned short": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "unsigned long": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "signed": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "unsigned": lambda field_name: 'ImGui::InputInt("{field_name}", &data.{field_name});\n',
+#     "float": lambda field_name: 'ImGui::InputFloat("{field_name}", &data.{field_name});\n',
+#     "double": lambda field_name: 'ImGui::InputDouble("{field_name}", &data.{field_name});\n',
+#     "cstring": lambda field_name: 'ImGui::InputText("{field_name}", data.{field_name}, sizeof(data.{field_name}));\n',
+# }
 
 
 def generate_imgui_render_editor_code(
@@ -128,14 +128,14 @@ def generate_imgui_render_editor_code_header(
 
 def get_struct_dependencies(
     struct_info: StructInfo, all_structs: OrderedDict[str, StructInfo]
-) -> List[str]:
+) -> Set[str]:
     """
     Get a list of all struct dependencies for a given struct info.
     """
-    dependencies: List[str] = []
+    dependencies: Set[str] = set()
     for field in struct_info.fields:
         if field.type_handler == "struct" and field.custom_type in all_structs:
-            dependencies.append(field.custom_type)
+            dependencies.add(field.custom_type)
     return dependencies
 
 
