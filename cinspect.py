@@ -11,9 +11,6 @@ import typeassert
 
 pp = pprint.PrettyPrinter()
 
-# consider invoking with CPATH set to include pycparser/utils/fake_libc_include
-# (note this is not included in the pycparser version installed from pip, just the git repo)
-
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser("CInspect")
     argparser.add_argument(
