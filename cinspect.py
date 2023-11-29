@@ -44,10 +44,11 @@ if __name__ == "__main__":
     for filename in files:
         ast = c_parser.get_ast(filename)
         resolved_structs = c_parser.resolve_structs(ast)
-        # pretty print the resolved structs
-        for struct_name, struct_info in resolved_structs.items():
-            if struct_info.options.get("generate"):
-                if args.verbose:
+
+        if args.verbose:
+            # pretty print the resolved structs
+            for struct_name, struct_info in resolved_structs.items():
+                if struct_info.options.get("generate"):
                     print(
                         f"Resolved struct {struct_name} @ {filename}:{struct_info.location.line}:{struct_info.location.column}",
                     )
